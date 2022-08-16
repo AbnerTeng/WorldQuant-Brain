@@ -42,4 +42,5 @@ Simulate.click()
 time.sleep(2)
 Skip = driver.find_element(By.CLASS_NAME, 'introjs-skipbutton')
 Skip.click()
+
 # %%
