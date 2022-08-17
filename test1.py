@@ -7,10 +7,13 @@ from selenium.webdriver.common.by import By
 import time
 
 ## go to brain website
-options = Options()
-options.add_argument('--disable-notifications')
+#options = Options()
+#options.add_argument('--disable-notifications')
+#op = webdriver.ChromeOptions()
+#op.add_argument('headless')
 
-driver = webdriver.Chrome('/Users/abnerteng/GitHub/WorldQuant-Brain/chromeDriver', chrome_options = options)
+
+driver = webdriver.Chrome('/Users/abnerteng/GitHub/WorldQuant-Brain/chromeDriver')#, options = op) # without browser
 driver.get('https://platform.worldquantbrain.com/sign-in')
 
 Accept = driver.find_element(By.CLASS_NAME, 'button--primary')
@@ -43,4 +46,7 @@ time.sleep(2)
 Skip = driver.find_element(By.CLASS_NAME, 'introjs-skipbutton')
 Skip.click()
 
+
+##TODO
 # %%
+## simulation part
