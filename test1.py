@@ -38,7 +38,8 @@ email.send_keys(your_email)
 password.send_keys(your_password)
 password.submit()
 
-# %%
+time.sleep(5)
+
 Skip = driver.find_element(By.CLASS_NAME, 'introjs-skipbutton')
 Skip.click()
 time.sleep(2)
@@ -130,8 +131,9 @@ for type in types:
             # simulate.click()
 
 # %%
-alpha = driver.find_element(By.CLASS_NAME, 'contentWidgets')
+alpha = driver.find_element(By.CLASS_NAME, "inputarea")
 cmd = 'ts_mean(close, 5)'
 alpha.send_keys(cmd)
+alpha.clean()
 # %%
 # switch_to.active_element
