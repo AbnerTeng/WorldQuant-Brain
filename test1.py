@@ -61,36 +61,33 @@ TODO
 types = ['None', 'Market', 'Sector', 'Industry', 'Subindustry']
 decays = range(1, 11, 1)
 truncations = np.arange(0.01, 0.11, 0.01)
+## a = range(1, 101, 1)
+## b = range(1, 101, 1)
+## cmd = 'rank(ts_std_dev(ts_mean(close, a), b))'
+## for a in range(1, 101, 1):
+##     for b in range(1, 101, 1):
+##         alpha = driver.find_element(By.CLASS_NAME, 'inputarea')
+##         cmd = ''     
 
 for type in types:
     for decay in decays:
         for truncation in truncations:
-            # try:
+            
             print(type, decay, truncation)
-            # print("test")
             settings = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "editor-top-bar-left__settings-btn"))
                 )
-            # finally:
-                # driver.quit()
             settings.click()
             time.sleep(1)
-            # try:
             neutralization = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, "neutralization"))
                 )
-
-            # finally:
-                # driver.quit()
             neutralization.click()
             time.sleep(1)
 
-            # try:
             neu_types = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "select-portal__item"))
                 )
-            # finally:
-                # driver.quit()
 
             neu_types = driver.find_elements(By.CLASS_NAME, "select-portal__item")
 
@@ -100,22 +97,16 @@ for type in types:
                     neu_type.click()
                     break
 
-            # try:
             decay_element = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.NAME, "decay"))
                 )
-            # finally:
-                # driver.quit()
 
             decay_element.clear()
             decay_element.send_keys(decay)
             time.sleep(1)
-            # try:
             truncation_element = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.NAME, "truncation"))
                 )
-            # finally:
-                # driver.quit()
             truncation_element.clear()
             truncation_element.send_keys(truncation)
             time.sleep(1)
@@ -123,12 +114,8 @@ for type in types:
             apply = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "button--lg"))
                 )
-            # driver.quit()
             apply.click()
             time.sleep(1)
-
-            # simulate = driver.find_element(By.CLASS_NAME, 'editor-simulate-button-text--is-code')
-            # simulate.click()
 
 # %%
 alpha = driver.find_element(By.CLASS_NAME, "inputarea")
@@ -136,4 +123,3 @@ cmd = 'ts_mean(close, 5)'
 alpha.send_keys(cmd)
 alpha.clean()
 # %%
-# switch_to.active_element
