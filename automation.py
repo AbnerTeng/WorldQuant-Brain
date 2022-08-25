@@ -1,4 +1,5 @@
 # %%
+from curses import KEY_BACKSPACE
 import email
 from email import header
 from enum import auto
@@ -82,7 +83,6 @@ def to_simulate(driver, url, your_email, your_password):
 # %%
 def get_commands() -> list:
     commands = price_vs_volume()
-    print(commands)
     return commands
 
 # %%
@@ -117,13 +117,15 @@ def simulate(driver, command, neu, decay, trunc):
         EC.presence_of_element_located((By.NAME, "decay"))
     )
 
-    decay_element.clear()
+    for _ in range(3):
+        decay_element.send_keys(Keys.BACK_SPACE)
     decay_element.send_keys(f'{decay}')
 
     trunc_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.NAME, "truncation"))
     )
-    trunc_element.clear()
+    for _ in range(5):
+        trunc_element.send_keys(Keys.BACK_SPACE)
     trunc_element.send_keys(f'{trunc}')
 
     apply = WebDriverWait(driver, 10).until(
@@ -156,7 +158,7 @@ def simulate(driver, command, neu, decay, trunc):
         pass_lines = []
         pass_text = Pass.text
         pass_lines += pass_text.split('\n')
-        print('{}{}'.format(Pass.text, pass_lines))
+        print(pass_lines)
 
     except:
         print('Pass fail')
@@ -178,7 +180,7 @@ def simulate(driver, command, neu, decay, trunc):
         fail_lines = []
         fail_text = Fail.text
         fail_lines += fail_text.split('\n')
-        print('{}{}'.format(Fail.text, fail_lines))
+        print(fail_lines)
 
     except:
         print('Fail fail')
@@ -259,10 +261,10 @@ def simulate(driver, command, neu, decay, trunc):
 
 def stop_criterion(information):
     if information['sharpe'] < 1:
-        return True
+        return False
     if information['fitness'] < 0.8:
-        return True
-    return False
+        return False
+    return True
 
 # %%
 def search_settings(driver, command, neutralizations, decays, truncations):
