@@ -1,6 +1,8 @@
 # %%
+from ast import Pass
 import email
 from wsgiref.util import setup_testing_defaults
+from xml.etree import ElementInclude
 import selenium
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -9,12 +11,15 @@ import time
 import numpy as np
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-## go to brain website
+import argparse
+import pandas as pd
+from pandas import DataFrame, Series
 #options = Options()
 #options.add_argument('--disable-notifications')
 #op = webdriver.ChromeOptions()
 #op.add_argument('headless')
+
+
 
 # %%
 driver = webdriver.Chrome('/Users/abnerteng/GitHub/WorldQuant-Brain/chromeDriver')#, options = op) # without browser
@@ -53,10 +58,6 @@ time.sleep(2)
 Skip = driver.find_element(By.CLASS_NAME, 'introjs-skipbutton')
 Skip.click()
 
-# %%
-TODO
-## crawl Universe, delay, neutralization, decay, truncation
-## simulation part
 # %%
 types = ['None', 'Market', 'Sector', 'Industry', 'Subindustry']
 decays = range(1, 11, 1)
@@ -122,4 +123,103 @@ alpha = driver.find_element(By.CLASS_NAME, "inputarea")
 cmd = 'ts_mean(close, 5)'
 alpha.send_keys(cmd)
 alpha.clean()
+
 # %%
+try:
+    Pass = driver.find_element(By.CLASS_NAME, "sumary__testing-checks-PASS-list")
+    pass_toggle = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-icon--PASS-down')
+    pass_toggle.click()
+    pass_lines = []
+    pass_text = Pass.text
+    pass_lines += pass_text.split('\n')
+    print('{}{}'.format(Pass.text, pass_lines))
+
+except:
+    print('pass fail')
+    # pass
+
+try:
+    Fail = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-FAIL-list')
+    fail_toggle = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-icon--FAIL-down')
+    fail_toggle.click()
+    fail_lines = []
+    fail_text = Fail.text
+    fail_lines += fail_text.split('\n')
+    print('{}{}'.format(Fail.text, fail_lines))
+
+except:
+    print('fail fail')
+    # pass
+# %%
+
+if len(pass_lines) == 6:
+    check = driver.find_element(By.CLASS_NAME, 'editor-button__text')
+    check.click()
+    time.sleep(5)
+
+    for line in pass_lines:
+        elements = line.split(' ')
+
+        if elements[0] == 'Sharpe':
+            sharpe = elements[2]
+        if elements[0] == 'Turnover':
+            turnover = elements[2]
+        if elements[0] == 'Sub-universe':
+            subsharpe = elements[3]
+        if elements[0] == 'Fitness':
+            fitness = elements[2]
+        if elements[0] == 'Weight':
+            weight = 'Weight is well distributed over instruments.'
+        if elements[0] == 'Self-correlation':
+            corr = elements[1]
+
+    pass_information = {
+        'sharpe': sharpe,
+        'turnover': turnover,
+        'subsharpe': subsharpe,
+        'fitness': fitness,
+        'weight': 'Weight is well distributed over instruments.',
+        'corr': corr
+    }
+    print(pass_information)
+
+else:
+    for line in pass_lines:
+        elements = line.split(' ')
+        if elements[0] == 'Sharpe':
+            sharpe = elements[2]
+        if elements[0] == 'Turnover':
+            turnover = elements[2]
+        if elements[0] == 'Sub-universe':
+            subsharpe = elements[3]
+        if elements[0] == 'Fitness':
+            fitness = elements[2]
+        if elements[0] == 'Weight':
+            weight = 'Weight is well distributed over instruments.'
+
+    for line in fail_lines:
+        elements = line.split(' ')
+        if elements[0] == 'Sharpe':
+            sharpe = elements[2]
+        if elements[0] == 'Turnover':
+            turnover = elements[2]
+        if elements[0] == 'Sub-universe':
+            subsharpe = elements[3]
+        if elements[0] == 'Fitness':
+            fitness = elements[2]
+        if elements[0] == 'Weight':
+            weight = 'Weight is too strongly concentrated or too few instruments are assigned weight.'
+
+    retry_information = {
+        'sharpe': sharpe,
+        'turnover': turnover,
+        'subsharpe': subsharpe,
+        'fitness': fitness,
+        'weight': weight,
+        'corr': -1
+    }
+    print(retry_information)
+
+
+# %%
+## Weight is too strongly concentrated or too few instruments are assigned weight.
