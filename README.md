@@ -13,3 +13,6 @@ How to record and save the Insample data which pass the IS test
         * Iterate each parameter and settings
         * Click simulate button
         * return & save check information
+
+## Sample command
+* `python3 automation.py --driver_path ./chrome_driver --url https://platform.worldquantbrain.com/simulate --neutralizations None Market Sector Industry Subindustry --decays 1 2 3 4 5 --truncations 0.01 0.02 0.03 0.04 0.05`
