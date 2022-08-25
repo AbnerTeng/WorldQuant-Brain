@@ -15,4 +15,7 @@ How to record and save the Insample data which pass the IS test
         * return & save check information
 
 ## Sample command
-* `python3 automation.py --driver_path ./chrome_driver --url https://platform.worldquantbrain.com/simulate --neutralizations None Market Sector Industry Subindustry --decays 1 2 3 4 5 --truncations 0.01 0.02 0.03 0.04 0.05`
+* For Abner
+  * `python3 automation.py -d ./chromeDriver -n Subindustry Industry Sector Market --decays 4 10 -t 0.01 0.08 --your_email abnerteng16@gmail.com --your_password teng1234 -c ./price_to_volume.csv`
+* For Tim
+  * `python3 automation.py -d ./chromedriver104 -n Subindustry Industry Sector Market --decays 4 10 -t 0.01 0.08 --your_email hsutim2000@gmail.com --your_password Kingkasermin -c ./price_to_volume.csv`
