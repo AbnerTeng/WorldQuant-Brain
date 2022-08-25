@@ -82,7 +82,7 @@ def to_simulate(driver, url, your_email, your_password):
 
 # %%
 def get_commands() -> list:
-    commands = price_vs_volume()
+    commands = volume_vs_price()
     return commands
 
 # %%
@@ -144,12 +144,12 @@ def simulate(driver, command, neu, decay, trunc):
 
     # time.sleep(30)
     try:
-        Pass = WebDriverWait(driver, 60).until(
+        Pass = WebDriverWait(driver, 300).until(
             EC.presence_of_element_located((By.CLASS_NAME, "sumary__testing-checks-PASS-list"))
         )
         Pass = driver.find_element(By.CLASS_NAME, "sumary__testing-checks-PASS-list")
 
-        pass_toggle = WebDriverWait(driver, 60).until(
+        pass_toggle = WebDriverWait(driver, 300).until(
             EC.presence_of_element_located((By.CLASS_NAME, "sumary__testing-checks-icon--PASS-down"))
         )
         pass_toggle = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-icon--PASS-down')
