@@ -26,10 +26,9 @@ UNARY_OP = ['', '-']
 
 # 15
 TS_OP_1D1P = [
-    'ts_av_diff',
     'ts_delay', 'ts_delta',
     'ts_ir', 'ts_max', 'ts_max_diff',
     'ts_median', 'ts_min', 'ts_min_diff',
     'ts_product', 'ts_std_dev',
-    'ts_sum', 'ts_entropy'
+    'ts_sum', 'ts_entropy', 'ts_av_diff'
 ]

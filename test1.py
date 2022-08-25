@@ -61,20 +61,14 @@ Skip.click()
 # %%
 types = ['None', 'Market', 'Sector', 'Industry', 'Subindustry']
 decays = range(1, 11, 1)
-truncations = np.arange(0.01, 0.11, 0.01)
-## a = range(1, 101, 1)
-## b = range(1, 101, 1)
-## cmd = 'rank(ts_std_dev(ts_mean(close, a), b))'
-## for a in range(1, 101, 1):
-##     for b in range(1, 101, 1):
-##         alpha = driver.find_element(By.CLASS_NAME, 'inputarea')
-##         cmd = ''     
+truncations = np.arange(0.01, 0.11, 0.01)  
 
 for type in types:
     for decay in decays:
         for truncation in truncations:
             
             print(type, decay, truncation)
+
             settings = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "editor-top-bar-left__settings-btn"))
                 )
@@ -121,8 +115,10 @@ for type in types:
 # %%
 alpha = driver.find_element(By.CLASS_NAME, "inputarea")
 cmd = 'ts_mean(close, 5)'
+alpha.click()
+alpha.clear()
 alpha.send_keys(cmd)
-alpha.clean()
+
 
 # %%
 try:
