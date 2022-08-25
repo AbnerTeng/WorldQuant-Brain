@@ -1,5 +1,6 @@
 # %%
 import email
+from email import header
 from enum import auto
 from wsgiref.util import setup_testing_defaults
 import selenium
@@ -10,20 +11,29 @@ import time
 import numpy as np
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 import argparse
+import csv
+from generate_commands import price_vs_volume, volume_vs_price
+
+# %%
+def hover(driver, element):
+    hov = ActionChains(driver).move_to_element(element).perform()
 
 # %%
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--driver_path', required=True, type=str)
-    parser.add_argument('-u', '--url', required=True, type=str)
+    parser.add_argument('-u', '--url', default='https://platform.worldquantbrain.com/sign-in', type=str)
     parser.add_argument('-n', '--neutralizations', required=True, type=str, nargs='+')
     parser.add_argument('--decays', required=True, type=int, nargs='+')
     parser.add_argument('-t', '--truncations', required=True, type=float, nargs='+')
     parser.add_argument('--your_email', required = True, type = str)
     parser.add_argument('--your_password', required = True, type = str)
+    parser.add_argument('-c', '--csv', required=True, type=str)
     args = parser.parse_args()
-    return args
+    return args 
 
 # %%
 
@@ -33,101 +43,265 @@ def to_simulate(driver, url, your_email, your_password):
     Accept = driver.find_element(By.CLASS_NAME, 'button--primary')
     Accept.click()
 
-    time.sleep(1)
-
     ## login
 
-    email = driver.find_element(By.ID, 'email')
-    password = driver.find_element(By.ID, 'password')
+    email = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "email"))
+    )
+    password = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "password"))
+    )
 
     email.send_keys(your_email)
     password.send_keys(your_password)
     password.submit()
 
-    time.sleep(5)
+    time.sleep(6)
 
-    Skip = driver.find_element(By.CLASS_NAME, 'introjs-skipbutton')
+    # Skip = WebDriverWait(driver, 10).until(
+    #     EC.presence_of_element_located((By.CLASS_NAME, "introjs-skipbutton"))
+    # )
+    Skip = driver.find_element(By.CLASS_NAME, "introjs-skipbutton")
     Skip.click()
-    time.sleep(2)
 
     ## go to the simulate page
-    Simulate = driver.find_element(By.CLASS_NAME, 'header__img--simulate')
+    Simulate = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "header__img--simulate"))
+    )
     Simulate.click()
 
-    time.sleep(2)
-    Skip = driver.find_element(By.CLASS_NAME, 'introjs-skipbutton')
+    time.sleep(5)
+    Skip = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "introjs-skipbutton"))
+    )
+    Skips = driver.find_elements(By.CLASS_NAME, "introjs-skipbutton")
+    assert(len(Skips) == 1)
+    Skip = Skips[0]
     Skip.click()
 
 # %%
 def get_commands() -> list:
-    pass
+    commands = price_vs_volume()
+    print(commands)
+    return commands
 
 # %%
 def simulate(driver, command, neu, decay, trunc):
     '''
     return sharpe, turnover, etc...
     '''
-    pass
 
-    type_strategy = driver.find_element(By.CLASS_NAME, "inputarea")
-    type_strategy.send_keys(command)
-    type_strategy.clean()
-
+    # %%
     settings = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "editor-top-bar-left__settings-btn"))
-                )
+        EC.presence_of_element_located((By.CLASS_NAME, "editor-top-bar-left__settings-btn"))
+    )
+    settings = driver.find_elements(By.CLASS_NAME, "editor-top-bar-left__settings-btn")[1]
     settings.click()
-    time.sleep(1)
 
     neutralization = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "neutralization"))
-        )
+        EC.presence_of_element_located((By.ID, "neutralization"))
+    )
     neutralization.click()
-    time.sleep(1)
 
     neu_types = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "select-portal__item"))
-        )
+        EC.presence_of_element_located((By.CLASS_NAME, "select-portal__item"))
+    )
+    neu_types = driver.find_elements(By.CLASS_NAME, "select-portal__item")
 
     for neu_type in neu_types:
-        print(neu_type.text)
         if neu_type.text == neu:
             neu_type.click()
             break
 
     decay_element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.NAME, "decay"))
-        )
+        EC.presence_of_element_located((By.NAME, "decay"))
+    )
 
     decay_element.clear()
-    decay_element.send_keys(decay)
-    time.sleep(1)
+    decay_element.send_keys(f'{decay}')
 
     trunc_element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.NAME, "truncation"))
-        )
+        EC.presence_of_element_located((By.NAME, "truncation"))
+    )
     trunc_element.clear()
-    trunc_element.send_keys(trunc)
-    time.sleep(1)
+    trunc_element.send_keys(f'{trunc}')
 
     apply = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "button--lg"))
-        )
+        EC.presence_of_element_located((By.CLASS_NAME, "button--lg"))
+    )
     apply.click()
-    time.sleep(1)
+
+    # click simulate & save results
+    alpha = driver.find_element(By.CLASS_NAME, "inputarea")
+    alpha.send_keys(command)
+
+    simulate_buttons = driver.find_elements(By.CLASS_NAME, "editor-simulate-button-text--is-code")
+    assert(len(simulate_buttons) == 1)
+    simulate_button = simulate_buttons[0]
+    simulate_button.click()
+
+    # time.sleep(30)
+    try:
+        Pass = WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "sumary__testing-checks-PASS-list"))
+        )
+        Pass = driver.find_element(By.CLASS_NAME, "sumary__testing-checks-PASS-list")
+
+        pass_toggle = WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "sumary__testing-checks-icon--PASS-down"))
+        )
+        pass_toggle = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-icon--PASS-down')
+        
+        pass_toggle.click()
+        pass_lines = []
+        pass_text = Pass.text
+        pass_lines += pass_text.split('\n')
+        print('{}{}'.format(Pass.text, pass_lines))
+
+    except:
+        print('Pass fail')
+
+    time.sleep(0.1)
+    try:
+        # Fail = WebDriverWait(driver, 60).until(
+        #     EC.presence_of_element_located((By.CLASS_NAME, "sumary__testing-checks-Fail-list"))
+        # )
+        Fail = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-FAIL-list')
+        
+        # fail_toggle = WebDriverWait(driver, 60).until(
+            # EC.presence_of_element_located((By.CLASS_NAME, "sumary__testing-checks-icon--FAIL-down"))
+        # )
+        fail_toggle = driver.find_element(By.CLASS_NAME, 'sumary__testing-checks-icon--FAIL-down')
+        fail_toggle.click()
+        # print('wait list')
+        
+        fail_lines = []
+        fail_text = Fail.text
+        fail_lines += fail_text.split('\n')
+        print('{}{}'.format(Fail.text, fail_lines))
+
+    except:
+        print('Fail fail')
+    # %%
+
+    if len(pass_lines) == 6:
+        # check = driver.find_element(By.CLASS_NAME, 'editor-button__text')
+        check = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "editor-button__text"))
+        )
+        check.click()
+
+        for line in pass_lines:
+            elements = line.split(' ')
+
+            if elements[0] == 'Sharpe':
+                sharpe = elements[2]
+            if elements[0] == 'Turnover':
+                turnover = elements[2]
+            if elements[0] == 'Sub-universe':
+                subsharpe = elements[3]
+            if elements[0] == 'Fitness':
+                fitness = elements[2]
+            if elements[0] == 'Weight':
+                weight = 'Weight is well distributed over instruments.'
+            if elements[0] == 'Self-correlation':
+                corr = elements[1]
+
+        information = {
+            'sharpe': float(sharpe),
+            'turnover': float(turnover[:-1]),
+            'subsharpe': float(subsharpe),
+            'fitness': float(fitness),
+            'weight': weight,
+            'corr': float(corr)
+        }
+
+    else:
+        for line in pass_lines:
+            elements = line.split(' ')
+            if elements[0] == 'Sharpe':
+                sharpe = elements[2]
+            if elements[0] == 'Turnover':
+                turnover = elements[2]
+            if elements[0] == 'Sub-universe':
+                subsharpe = elements[3]
+            if elements[0] == 'Fitness':
+                fitness = elements[2]
+            if elements[0] == 'Weight':
+                weight = 'Weight is well distributed over instruments.'
+
+        for line in fail_lines:
+            elements = line.split(' ')
+            if elements[0] == 'Sharpe':
+                sharpe = elements[2]
+            if elements[0] == 'Turnover':
+                turnover = elements[2]
+            if elements[0] == 'Sub-universe':
+                subsharpe = elements[3]
+            if elements[0] == 'Fitness':
+                fitness = elements[2]
+            if elements[0] == 'Weight':
+                weight = 'Weight is too strongly concentrated or too few instruments are assigned weight.'
+
+        information = {
+            'sharpe': float(sharpe),
+            'turnover': float(turnover[:-1]),
+            'subsharpe': float(subsharpe),
+            'fitness': float(fitness),
+            'weight': weight,
+            'corr': -1
+        }
+
+    for _ in range(len(command)):
+        alpha.send_keys(Keys.BACK_SPACE)
+    
+    return information
+
+def stop_criterion(information):
+    if information['sharpe'] < 1:
+        return True
+    if information['fitness'] < 0.8:
+        return True
+    return False
 
 # %%
-def search_settings(command, neutralizations, decays, truncations):
+def search_settings(driver, command, neutralizations, decays, truncations):
     '''
     Returns:
         results[(command, neu, decay, trunc)] = {'sharpe': 1.27, ...}
     '''
 
-    pass
+    results = {}
+    run_neu = [True for _ in range(len(neutralizations))]
+    for decay in decays:
+        for trunc in truncations:
+            for i, neu in enumerate(neutralizations):
+                if run_neu[i]:
+                    information = simulate(driver, command, neu, decay, trunc)
+                    results[(command, neu, decay, trunc)] = information
+                    run_neu[i] = stop_criterion(information)
+
+    return results
 
 # %%
-def dump_to_csv(results):
-    pass
+def dump_to_csv(results, csv_file):
+    with open(csv_file, 'a') as f:
+        writer = csv.writer(f)
+        print(results)
+        for key, values in results.items():
+            command, neu, decay, trunc = key
+            sharpe    = values['sharpe']
+            fitness   = values['fitness']
+            turnover  = values['turnover']
+            weight    = values['weight']
+            subsharpe = values['subsharpe']
+            corr      = values['corr']
+
+            row = [
+                command, neu, decay, trunc, sharpe,
+                fitness, turnover, weight, subsharpe, corr
+            ]
+            writer.writerow(row)
 
 # %%
 def automation(args):
@@ -137,17 +311,30 @@ def automation(args):
     neutralizations = args.neutralizations
     decays = args.decays
     truncations = args.truncations
+    csv_file = args.csv
 
     driver = webdriver.Chrome(driver_path)
-    to_simulate(driver, url)
+    to_simulate(driver, url, args.your_email, args.your_password)
 
     commands = get_commands()
     results = {}
+
+    # write header
+    with open(csv_file, 'w') as f:
+        writer = csv.writer(f)
+        header = [
+            'command', 'neutralization', 'decay', 'truncation',
+            'sharpe', 'fitness', 'turnover', 'weight',
+            'subsharpe', 'correlation'
+        ]
+        writer.writerow(header)
+
     for command in commands:
-        ret = search_settings(command, neutralizations, decays, truncations)
+        ret = search_settings(driver, command, neutralizations, decays, truncations)
+        dump_to_csv(ret, csv_file)
         results.update(ret)
     
-    dump_to_csv(results)
+    print(results)
 
 # %%
 if __name__ == '__main__':
