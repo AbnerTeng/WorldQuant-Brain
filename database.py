@@ -40,9 +40,13 @@ TS_OP_1D2P = [
 GROUP_OP_1D1P = [
     'group_zscore', 'group_std_dev', 'group_rank',
     'group_sum', 'group_scale', 'group_max',
-    'group_min', 'group_median'
+    'group_median'
 ]
 
 GROUP_DT = [
-    'none', 'market', 'sector', 'industry', 'subindustry'
+    'market', 'sector', 'industry', 'subindustry'
+]
+
+P_or_M = [
+    '', '-'
 ]
