@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import argparse
 import csv
-from generate_commands import price_vs_volume, volume_vs_price
+from generate_commands import price_vs_volume, scale_and_corr, volume_vs_price
 
 # %%
 def hover(driver, element):
@@ -82,7 +82,7 @@ def to_simulate(driver, url, your_email, your_password):
 
 # %%
 def get_commands() -> list:
-    commands = volume_vs_price()
+    commands = scale_and_corr()
     return commands
 
 # %%
