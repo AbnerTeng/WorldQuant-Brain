@@ -18,7 +18,7 @@ one_OP_one = [
 # 7
 OP_one = [
     '', 'rank', 'sigmoid', 'exp',
-    'fraction', 'log', 'log_diff'
+    'fraction', 'log', 'log_diff', 'scale'
 ]
 
 # 2
@@ -31,4 +31,18 @@ TS_OP_1D1P = [
     'ts_median', 'ts_min', 'ts_min_diff',
     'ts_product', 'ts_std_dev',
     'ts_sum', 'ts_entropy', 'ts_av_diff'
+]
+
+TS_OP_1D2P = [
+    'ts_corr'
+]
+
+GROUP_OP_1D1P = [
+    'group_zscore', 'group_std_dev', 'group_rank',
+    'group_sum', 'group_scale', 'group_max',
+    'group_min', 'group_median'
+]
+
+GROUP_DT = [
+    'none', 'market', 'sector', 'industry', 'subindustry'
 ]
