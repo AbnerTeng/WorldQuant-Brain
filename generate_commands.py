@@ -1,8 +1,8 @@
 from database import PRICES, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one
 
 def price_vs_volume():
-    D1 = [1, 2, 3, 5, 8, 13, 21]
-    D2 = [1, 2, 3, 5, 8, 13, 21]
+    D1 = [1, 5, 10, 50]
+    D2 = [1, 5, 10, 50]
     commands = []
     for price in PRICES:
         for volume in VOLUMES:
@@ -18,8 +18,8 @@ def price_vs_volume():
 
 
 def volume_vs_price():
-    D1 = [1, 2, 3, 5, 8, 13, 21]
-    D2 = [1, 2, 3, 5, 8, 13, 21]
+    D1 = [1, 5, 10, 50]
+    D2 = [1, 5, 10, 50]
     commands = []
     for price in PRICES:
         for volume in VOLUMES:
