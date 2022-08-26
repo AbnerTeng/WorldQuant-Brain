@@ -1,5 +1,5 @@
 from tkinter.ttk import Scale
-from database import GROUP_DT, GROUP_OP_1D1P, PRICES, TS_OP_1D2P, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one
+from database import GROUP_DT, GROUP_OP_1D1P, PRICES, TS_OP_1D2P, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one, P_or_M
 
 def price_vs_volume():
     D1 = [1, 5, 10, 50]
@@ -61,8 +61,11 @@ def from_wq():
                 for price4 in PRICES:
                     if price3 == price4:
                         continue
-                    for group in GROUP_DT:
-                        for group_op in GROUP_OP_1D1P:
-                            command = f'{group_op}(-({price1}-{price2})/({price1} - {price2}), {group})'
-                            commands.append(command)
+                    if price1 == price3 and price2 == price4:
+                        continue
+                    for p_or_m in P_or_M:
+                        for group in GROUP_DT:
+                            for group_op in GROUP_OP_1D1P:
+                                command = f'{group_op}({p_or_m}({price1} - {price2})/({price3} - {price4}), {group})'
+                                commands.append(command)
     return commands
