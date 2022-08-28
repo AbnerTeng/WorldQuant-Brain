@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import argparse
 import csv
-from generate_commands import price_vs_volume, scale_and_corr, volume_vs_price
+from generate_commands import abner_try, price_vs_volume, scale_and_corr, volume_vs_price, from_wq, price_vs_price
 
 # %%
 def hover(driver, element):
@@ -82,7 +82,7 @@ def to_simulate(driver, url, your_email, your_password):
 
 # %%
 def get_commands() -> list:
-    commands = scale_and_corr()
+    commands = abner_try()
     return commands
 
 # %%
@@ -187,6 +187,10 @@ def simulate(driver, command, neu, decay, trunc):
     # %%
 
     if len(pass_lines) == 6:
+        cancel = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'button--secondary'))
+        )
+        cancel.click()
         # check = driver.find_element(By.CLASS_NAME, 'editor-button__text')
         check = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "editor-button__text"))
