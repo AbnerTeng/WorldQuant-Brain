@@ -142,7 +142,7 @@ def simulate(driver, command, neu, decay, trunc):
     simulate_button = simulate_buttons[0]
     simulate_button.click()
 # %%
-    progress = WebDriverWait(driver, 10).until(
+    progress = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.CLASS_NAME, 'progress'))
     )
     while progress.text != '100%':
