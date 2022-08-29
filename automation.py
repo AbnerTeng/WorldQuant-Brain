@@ -141,7 +141,19 @@ def simulate(driver, command, neu, decay, trunc):
     assert(len(simulate_buttons) == 1)
     simulate_button = simulate_buttons[0]
     simulate_button.click()
+# %%
+    progress = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'progress'))
+    )
+    while progress.text != '100%':
+        progress = driver.find_element(By.CLASS_NAME, 'progress')
+    
+    for _ in range(len(command)):
+        alpha.send_keys(Keys.BACK_SPACE)
 
+    return
+# %%
+    # %%
     # time.sleep(30)
     try:
         Pass = WebDriverWait(driver, 300).until(
@@ -187,10 +199,6 @@ def simulate(driver, command, neu, decay, trunc):
     # %%
 
     if len(pass_lines) == 6:
-        cancel = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'button--secondary'))
-        )
-        cancel.click()
         # check = driver.find_element(By.CLASS_NAME, 'editor-button__text')
         check = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "editor-button__text"))
@@ -282,12 +290,14 @@ def search_settings(driver, command, neutralizations, decays, truncations):
     for decay in decays:
         for trunc in truncations:
             for i, neu in enumerate(neutralizations):
-                if run_neu[i]:
-                    information = simulate(driver, command, neu, decay, trunc)
-                    results[(command, neu, decay, trunc)] = information
-                    run_neu[i] = stop_criterion(information)
+                # if run_neu[i]:
+                simulate(driver, command, neu, decay, trunc)
+                    # information = simulate(driver, command, neu, decay, trunc)
+                    # results[(command, neu, decay, trunc)] = information
+                    # run_neu[i] = stop_criterion(information)
 
-    return results
+    # return results
+    return
 
 # %%
 def dump_to_csv(results, csv_file):
@@ -336,11 +346,12 @@ def automation(args):
         writer.writerow(header)
 
     for command in commands:
-        ret = search_settings(driver, command, neutralizations, decays, truncations)
-        dump_to_csv(ret, csv_file)
-        results.update(ret)
+        # ret = search_settings(driver, command, neutralizations, decays, truncations)
+        search_settings(driver, command, neutralizations, decays, truncations)
+        # dump_to_csv(ret, csv_file)
+        # results.update(ret)
     
-    print(results)
+    # print(results)
 
 # %%
 if __name__ == '__main__':
