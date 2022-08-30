@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import argparse
 import csv
-from generate_commands import abner_try, abner_try_2, price_vs_volume, scale_and_corr, volume_vs_price, from_wq, price_vs_price
+from generate_commands import price_vs_volume
 
 # %%
 def hover(driver, element):
@@ -82,7 +82,7 @@ def to_simulate(driver, url, your_email, your_password):
 
 # %%
 def get_commands() -> list:
-    commands = abner_try_2()
+    commands = price_vs_volume()
     return commands
 
 # %%
@@ -140,7 +140,13 @@ def simulate(driver, command, neu, decay, trunc):
     simulate_buttons = driver.find_elements(By.CLASS_NAME, "editor-simulate-button-text--is-code")
     assert(len(simulate_buttons) == 1)
     simulate_button = simulate_buttons[0]
-    simulate_button.click()
+
+    while True:
+        try:
+            simulate_button.click()
+            break
+        except:
+            continue
 
     #progress = driver.find_element(By.CLASS_NAME, "progress")
     progress = WebDriverWait(driver, 10).until(
@@ -152,16 +158,9 @@ def simulate(driver, command, neu, decay, trunc):
         print(progress.text)
         progress = driver.find_element(By.CLASS_NAME, 'progress')
 
-    # time.sleep(2)
-    # completed = driver.find_element(By.CLASS_NAME, "editor-tabs__tab-dot--completed")
-    completed = WebDriverWait(driver, 10).until(
-       EC.presence_of_element_located((By.CLASS_NAME, 'editor-tabs__tab-dot--completed'))
-    )
-    print(completed.text)
+    for _ in range(len(command)):
+       alpha.send_keys(Keys.BACK_SPACE)
 
-    ##for _ in range(len(command)):
-    ##    alpha.send_keys(Keys.BACK_SPACE)
-##
     return
 
     ## "editor-tabs__tab-dot--completed"
