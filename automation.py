@@ -152,8 +152,11 @@ def simulate(driver, command, neu, decay, trunc):
         print(progress.text)
         progress = driver.find_element(By.CLASS_NAME, 'progress')
 
-    time.sleep(2)
-    completed = driver.find_element(By.CLASS_NAME, "editor-tabs__tab-dot--completed")
+    # time.sleep(2)
+    # completed = driver.find_element(By.CLASS_NAME, "editor-tabs__tab-dot--completed")
+    completed = WebDriverWait(driver, 10).until(
+       EC.presence_of_element_located((By.CLASS_NAME, 'editor-tabs__tab-dot--completed'))
+    )
     print(completed.text)
 
     ##for _ in range(len(command)):
