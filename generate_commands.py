@@ -1,5 +1,6 @@
+from imaplib import Commands
 from tkinter.ttk import Scale
-from database import GROUP_DT, GROUP_OP_1D1P, PRICES, TS_OP_1D2P, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one, P_or_M
+from database import GROUP_DT, GROUP_OP_1D1P, PRICES, TS_OP_1D2P, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one, P_or_M, DEAL_WITH_WEIGHT, IF_ELSE, CONDITION
 
 def price_vs_volume():
     D1 = [1, 5, 10, 50]
@@ -34,6 +35,24 @@ def volume_vs_price():
                                     commands.append(command)
     return commands
 
+def price_vs_price():
+    D1 = [1, 5, 10, 50]
+    D2 = [1, 5, 10, 50]
+    commands = []
+    for price1 in PRICES:
+        for price2 in PRICES:
+            if price1 == price2:
+                continue
+            for ts_op_1d1p in TS_OP_1D1P:
+                for unary in UNARY_OP:
+                    for one_op_one in one_OP_one:
+                        for op_one in OP_one:
+                            for d1 in D1:
+                                for d2 in D2:
+                                    command = f'{unary}{ts_op_1d1p}({op_one}(ts_median({price1}, {d1}) {one_op_one} ts_median({price2}, {d1})), {d2})'
+                                    commands.append(command)
+    return commands
+
 def scale_and_corr():
     D1 = [1, 5, 10, 50]
     D2 = [1, 5, 10, 50]
@@ -61,11 +80,32 @@ def from_wq():
                 for price4 in PRICES:
                     if price3 == price4:
                         continue
-                    if price1 == price3 and price2 == price4:
-                        continue
                     for p_or_m in P_or_M:
                         for group in GROUP_DT:
                             for group_op in GROUP_OP_1D1P:
-                                command = f'{group_op}({p_or_m}({price1} - {price2})/({price3} - {price4}), {group})'
+                                command = f'{group_op}({p_or_m}({price1} - {price2})/({price3} - {price4}), subindustry)'
                                 commands.append(command)
+    return commands
+
+def abner_try():
+    commands = []
+    for price1 in PRICES:
+        for price2 in PRICES:
+            if price1 == price2:
+                continue
+            for ts_op_1d1p in TS_OP_1D1P:
+                command = f'rank((1 * ((open - close) / ts_decay_linear(rank({ts_op_1d1p}({price1}, 10)), 2))))'
+                commands.append(command)
+    return commands
+
+def abner_try_2():
+    D1 = [1, 2, 5, 10, 20, 30, 50, 100] 
+    D2 = [2, 5, 10, 20, 30, 50, 100, 120]
+    commands = []
+    for if_else in IF_ELSE:
+        for condition in CONDITION:
+            for d1 in D1:
+                for d2 in D2:
+                    command = f'close>open?-rank(ts_mean(close, {d1})):rank(ts_mean(close, {d2}))'
+                    commands.append(command)
     return commands
