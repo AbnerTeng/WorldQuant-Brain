@@ -63,3 +63,8 @@ IF_ELSE = [
 CONDITION = [
     '>', '<', '='
 ]
+
+FUND = [
+    'assets', 'capex', 'cash', 'cogs',
+    'debt', 'eps', 'equity'
+]

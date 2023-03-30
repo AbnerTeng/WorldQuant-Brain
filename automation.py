@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import argparse
 import csv
-from generate_commands import price_vs_volume
+from generate_commands import stage2_test
 
 # %%
 def hover(driver, element):
@@ -82,7 +82,7 @@ def to_simulate(driver, url, your_email, your_password):
 
 # %%
 def get_commands() -> list:
-    commands = price_vs_volume()
+    commands = stage2_test()a
     return commands
 
 # %%
@@ -149,12 +149,12 @@ def simulate(driver, command, neu, decay, trunc):
             continue
 
     #progress = driver.find_element(By.CLASS_NAME, "progress")
-    progress = WebDriverWait(driver, 10).until(
+    progress = WebDriverWait(driver, 30).until(
        EC.presence_of_element_located((By.CLASS_NAME, 'progress'))
     )
 
     while progress.text != '100%':
-        time.sleep(1)
+        ##time.sleep(1)
         print(progress.text)
         progress = driver.find_element(By.CLASS_NAME, 'progress')
 

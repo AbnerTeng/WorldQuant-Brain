@@ -1,6 +1,16 @@
 from imaplib import Commands
 from tkinter.ttk import Scale
-from database import GROUP_DT, GROUP_OP_1D1P, PRICES, TS_OP_1D2P, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one, P_or_M, DEAL_WITH_WEIGHT, IF_ELSE, CONDITION
+from database import GROUP_DT, GROUP_OP_1D1P, PRICES, TS_OP_1D2P, VOLUMES, TS_OP_1D1P, UNARY_OP, one_OP_one, OP_one, P_or_M, DEAL_WITH_WEIGHT, IF_ELSE, CONDITION, FUND
+
+def stage2_test():
+    D1 = [1, 5, 10, 20, 50]
+    commands = []
+    for fund in FUND:
+        for unary in UNARY_OP:
+            for d1 in D1:
+                command = f'{unary}(sigmoid(ts_delta({fund}, {d1})))'
+                commands.append(command)
+
 
 def price_vs_volume():
     D1 = [1, 5, 10, 50]
@@ -98,14 +108,3 @@ def abner_try():
                 commands.append(command)
     return commands
 
-def abner_try_2():
-    D1 = [1, 2, 5, 10, 20, 30, 50, 100] 
-    D2 = [2, 5, 10, 20, 30, 50, 100, 120]
-    commands = []
-    for if_else in IF_ELSE:
-        for condition in CONDITION:
-            for d1 in D1:
-                for d2 in D2:
-                    command = f'close>open?-rank(ts_mean(close, {d1})):rank(ts_mean(close, {d2}))'
-                    commands.append(command)
-    return commands
